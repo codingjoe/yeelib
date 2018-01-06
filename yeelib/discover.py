@@ -63,7 +63,7 @@ class YeelightProtocol(asyncio.DatagramProtocol):
 
     def datagram_received(self, data, addr):
         msg = data.decode()
-        logger.debug("%s:%s> %s", *addr, msg)
+        logger.debug("%s:%s> %s", addr + (msg,))
 
         lines = msg.splitlines()
         type, addr, status = lines[0].split()
