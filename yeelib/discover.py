@@ -49,7 +49,7 @@ def send_search_broadcast(transport, search_interval=30, _running=True):
         ]
         msg = '\r\n'.join(lines)
         logger.debug(">>> %s", msg)
-        transport.sendto(msg.encode('utf-8'), MCAST_ADDR)
+        transport.sendto(msg.encode(), MCAST_ADDR)
         yield from asyncio.sleep(search_interval)
 
 

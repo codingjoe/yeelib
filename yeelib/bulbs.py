@@ -65,7 +65,7 @@ class Bulb:
         msg = json.dumps(data) + '\r\n'
         reader, writer = yield from self.socket
         try:
-            writer.write(msg.encode('utf-8'))
+            writer.write(msg.encode())
             logger.debug("%s: >>> %s", self.ip, msg.strip())
         except socket.error:
             logger.exception("Connection error")
@@ -74,5 +74,5 @@ class Bulb:
             response = yield from reader.readline()
             if response is not None:
                 logger.debug("%s: ... %s",
-                             self.ip, response.decode('utf-8').strip())
-                return json.loads(response)
+                             self.ip, response.decode().strip())
+                return json.loads(response.decode())
