@@ -1,0 +1,2 @@
+class YeelightError(Exception):
+    pass
