@@ -1,4 +1,5 @@
-======
+|version| |ci| |coverage| |license|
+
 yeelib
 ======
 
@@ -91,3 +92,12 @@ Specifications
 
 For more information check out the Yeelight developer documentation.
 http://www.yeelight.com/download/Yeelight_Inter-Operation_Spec.pdf
+
+.. |version| image:: https://img.shields.io/pypi/v/yeelib.svg
+   :target: https://pypi.python.org/pypi/yeelib/
+.. |ci| image:: https://api.travis-ci.org/codingjoe/yeelib.svg?branch=master
+   :target: https://travis-ci.org/codingjoe/yeelib
+.. |coverage| image:: https://codecov.io/gh/codingjoe/yeelib/branch/master/graph/badge.svg
+   :target: https://codecov.io/gh/codingjoe/yeelib
+.. |license| image:: https://img.shields.io/badge/license-Apache_2-blue.svg
+   :target: LICENSE
