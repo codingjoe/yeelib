@@ -26,8 +26,9 @@ class TestBulb:
             'id': '0x000000000015243f',
             'model': 'color',
             'fw_ver': 18,
-            'support': 'get_prop set_default set_power toggle set_bright start_cf stop_cf set_scene'
-                       'cron_add cron_get cron_del set_ct_abx set_rgb',
+            'support': 'get_prop set_default set_power toggle set_bright'
+                       ' start_cf stop_cf set_scene cron_add cron_get'
+                       ' cron_del set_ct_abx set_rgb',
             'power': 'on',
             'bright': 100,
             'color_mode': 2,
@@ -41,5 +42,5 @@ class TestBulb:
         with Bulb(*self.bulb_addr, **kwargs) as b:
             assert b.fw_ver == 18
             assert b.support == ['get_prop', 'set_default', 'set_power', 'toggle', 'set_bright',
-                                 'start_cf', 'stop_cf', 'set_scenecron_add', 'cron_get',
+                                 'start_cf', 'stop_cf', 'set_scene', 'cron_add', 'cron_get',
                                  'cron_del', 'set_ct_abx', 'set_rgb']
