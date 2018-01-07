@@ -71,8 +71,11 @@ class Bulb:
             logger.exception("Connection error")
             self.socket = None
         else:
-            response = yield from reader.readline()
+            response = (yield from reader.readline()).decode()
             if response is not None:
                 logger.debug("%s: ... %s",
-                             self.ip, response.decode().strip())
-                return json.loads(response.decode())
+                             self.ip, response.strip())
+                try:
+                    return json.loads(response)
+                except ValueError:
+                    logger.exception("Could not read message: %s", response)
