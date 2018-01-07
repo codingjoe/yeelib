@@ -52,7 +52,7 @@ Example:
 
 The script above will turn all off every 10 seconds.
 The following script does the same thing, but note how you can define the bulbs
-prior calling the ``search_bulbs`` context manager. This works do to the fact
+prior calling the ``search_bulbs`` context manager. This works due to the fact
 that dictionaries are mutable in Python.
 
 .. code:: python
