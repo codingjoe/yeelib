@@ -4,13 +4,16 @@ import logging
 import socket
 import time
 
+from yeelib.exceptions import YeelightError
+
 __all__ = ('Bulb', )
 
 logger = logging.getLogger('yeelib')
 
 
 class Bulb:
-    def __init__(self, ip, port=55443, status_refresh_interval=3600, **kwargs):
+    def __init__(self, ip, port=55443, status_refresh_interval=3600, _registry=None, **kwargs):
+        self._registry = _registry
         self.ip = ip
         self.port = port
         self.status_refresh_interval = status_refresh_interval
@@ -37,10 +40,9 @@ class Bulb:
         return "<%s: %s>" % (type(self).__name__, self.ip)
 
     @property
-    @asyncio.coroutine
-    def socket(self):
+    async def socket(self):
         if self.__socket is None:
-            self.__socket = yield from asyncio.open_connection(
+            self.__socket = await asyncio.open_connection(
                 self.ip, self.port)
         return self.__socket
 
@@ -52,10 +54,14 @@ class Bulb:
             pass
         else:
             writer.close()
+            if self._registry:
+                del self._registry[self.id]
         self.__socket = value
 
-    @asyncio.coroutine
-    def send_command(self, method, params):
+    async def send_command(self, method, params):
+        if method not in self.support:
+            msg = "The method '%s' is not supported by this bulb." % method
+            raise YeelightError(msg)
         self.__command_id += 1
         data = {
             'id': self.__command_id,
@@ -63,7 +69,7 @@ class Bulb:
             'params': params,
         }
         msg = json.dumps(data) + '\r\n'
-        reader, writer = yield from self.socket
+        reader, writer = await self.socket
         try:
             writer.write(msg.encode())
             logger.debug("%s: >>> %s", self.ip, msg.strip())
@@ -72,7 +78,7 @@ class Bulb:
             self.socket = None
         else:
             try:
-                response = (yield from reader.readline()).decode()
+                response = (await reader.readline()).decode()
             except ConnectionError:
                 logger.exception("Connection error")
                 socket.socket = None

@@ -4,36 +4,33 @@ import pytest
 
 from yeelib.discover import YeelightProtocol, search_bulbs
 from yeelib.exceptions import YeelightError
+from yeelib import bulbs
 
 from . import fixtures
 
 
 class TestYeelightProtocoll:
     def test_notify(self, ):
-        bulbs = {}
-        p = YeelightProtocol(bulbs=bulbs)
+        p = YeelightProtocol()
         p.datagram_received(data=fixtures.request, addr=('192.168.1.239', 1982))
         assert len(bulbs) == 1
         assert bulbs['0x000000000015243f'].ip == '192.168.1.239'
 
     def test_mcast(self, ):
-        bulbs = {}
-        p = YeelightProtocol(bulbs=bulbs)
+        p = YeelightProtocol()
         p.datagram_received(data=fixtures.response, addr=('192.168.1.239', 1982))
         assert len(bulbs) == 1
         assert bulbs['0x000000000015243f'].ip == '192.168.1.239'
 
     def test_duplicate(self):
-        bulbs = {}
-        p = YeelightProtocol(bulbs=bulbs)
+        p = YeelightProtocol()
         p.datagram_received(data=fixtures.request, addr=('192.168.1.239', 1982))
         p.datagram_received(data=fixtures.request, addr=('192.168.1.239', 1982))
         assert len(bulbs) == 1
         assert bulbs['0x000000000015243f'].ip == '192.168.1.239'
 
     def test_wrong_location(self):
-        bulbs = {}
-        p = YeelightProtocol(bulbs=bulbs)
+        p = YeelightProtocol()
         with pytest.raises(YeelightError) as e:
             p.datagram_received(data=fixtures.response_wrong_location,
                                 addr=('192.168.1.239', 1982))

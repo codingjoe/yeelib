@@ -11,7 +11,7 @@ class TestBulb:
     @mocketize
     def test_send_command(self):
         Mocket.register(MocketEntry(self.bulb_addr, [b'{"id":1, "result":["ok"]}\r\n']))
-        with Bulb(*self.bulb_addr) as b:
+        with Bulb(*self.bulb_addr, id=1, support=['set_ct_abx']) as b:
             loop = asyncio.get_event_loop()
             response = loop.run_until_complete(b.send_command('set_ct_abx', [3500, 'smooth', 500]))
 

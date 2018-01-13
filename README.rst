@@ -55,37 +55,6 @@ The following script does the same thing, but note how you can define the bulbs
 prior calling the ``search_bulbs`` context manager. This works due to the fact
 that dictionaries are mutable in Python.
 
-.. code:: python
-
-    import asyncio
-
-    from yeelib import search_bulbs
-
-
-    @asyncio.coroutine
-    def turn_all_lights_on(bulbs):
-        while True:
-            print(bulbs)
-            for b in bulbs.values():
-                asyncio.Task(b.send_command("set_power",
-                                            ["off", "sudden", 40]))
-            yield from asyncio.sleep(10)
-
-
-    def main():
-        bulbs = {}
-        asyncio.Task(turn_all_lights_on(bulbs))
-        loop = asyncio.get_event_loop()
-        try:
-            with search_bulbs(bulbs):
-                loop.run_forever()
-        except KeyboardInterrupt:
-            loop.stop()
-
-
-    if __name__ == '__main__':
-        main()
-
 
 Specifications
 --------------

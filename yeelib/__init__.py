@@ -1,2 +1,2 @@
 from .discover import *  # NoQA
-from .bulbs import *  # NoQA
+from .devices import *  # NoQA
