@@ -30,7 +30,6 @@ Example:
     @asyncio.coroutine
     def turn_all_lights_on(bulbs):
         while True:
-            print(bulbs)
             for b in bulbs.values():
                 asyncio.Task(b.send_command("set_power",
                                             ["off", "sudden", 40]))
@@ -39,12 +38,12 @@ Example:
 
     def main():
         loop = asyncio.get_event_loop()
-        with search_bulbs() as bulbs:
-            loop.create_task(turn_all_lights_on(bulbs))
-            try:
-                loop.run_forever()
-            except KeyboardInterrupt:
-                loop.stop()
+        bulbs = loop.run_until_complete(search_bulbs())
+        loop.create_task(turn_all_lights_on(bulbs))
+        try:
+            loop.run_forever()
+        except KeyboardInterrupt:
+            loop.stop()
 
 
     if __name__ == '__main__':

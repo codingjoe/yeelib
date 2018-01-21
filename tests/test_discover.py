@@ -38,6 +38,6 @@ class TestYeelightProtocoll:
 
 
 def test_search_bulbs():
+    asyncio.Task(search_bulbs())
     loop = asyncio.get_event_loop()
-    with search_bulbs():
-        loop.run_until_complete(asyncio.sleep(1))
+    loop.run_until_complete(asyncio.sleep(1))
