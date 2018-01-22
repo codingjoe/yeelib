@@ -45,6 +45,7 @@ class YeelightProtocol(SimpleServiceDiscoveryProtocol):
         self.loop = loop or asyncio.get_event_loop()
 
     def connection_made(self, transport):
+        self.transport = transport
         ucast_socket = transport.get_extra_info('socket')
         try:
             ucast_socket.bind(('', MCAST_PORT))
@@ -57,6 +58,8 @@ class YeelightProtocol(SimpleServiceDiscoveryProtocol):
         except socket.error as e:
             ucast_socket.close()
             self.connection_lost(exc=e)
+        else:
+            self.bcast_msg_task = asyncio.Task(send_search_broadcast(transport))
 
     @classmethod
     def header_to_kwargs(cls, headers):
@@ -97,6 +100,8 @@ class YeelightProtocol(SimpleServiceDiscoveryProtocol):
 
     def connection_lost(self, exc):
         logger.exception("connection error")
+        self.bcast_msg_task.cancel()
+        self.transport.close()
 
         async def _restart():
             await asyncio.sleep(10)
@@ -111,5 +116,4 @@ async def search_bulbs(bulb_class=Bulb, loop=None):
     unicast_connection = loop.create_datagram_endpoint(
         lambda: YeelightProtocol(bulb_class), family=socket.AF_INET)
     ucast_transport, _ = await unicast_connection
-    loop.create_task(send_search_broadcast(ucast_transport))
     return bulbs
