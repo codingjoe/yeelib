@@ -81,7 +81,7 @@ class Bulb:
                 response = (await reader.readline()).decode()
             except OSError:
                 logger.exception("Connection error")
-                socket.socket = None
+                self.socket = None
             else:
                 if response is not None:
                     logger.debug("%s: ... %s",
