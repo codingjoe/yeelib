@@ -106,9 +106,21 @@ class YeelightProtocol(SimpleServiceDiscoveryProtocol):
 
         async def _restart():
             await asyncio.sleep(10)
-            await search_bulbs(self.bulb_class, self.loop)
+            await search_bulbs(self.bulb_class, self.loop, kwargs=self.bulb_class)
 
         asyncio.Task(_restart())
+
+
+async def remove_missing_bulbs(timeout=60):
+    while True:
+        missing_bulbs = (
+            bulb.id
+            for bulb in bulbs
+            if bulb.last_seen < time.time() - timeout
+        )
+        for idx in missing_bulbs:
+            del bulbs[idx]
+        await asyncio.sleep(timeout/2)
 
 
 async def search_bulbs(bulb_class=Bulb, loop=None, kwargs=None):
@@ -119,4 +131,5 @@ async def search_bulbs(bulb_class=Bulb, loop=None, kwargs=None):
     unicast_connection = loop.create_datagram_endpoint(
         lambda: YeelightProtocol(bulb_class, **kwargs), family=socket.AF_INET)
     ucast_transport, _ = await unicast_connection
+    loop.Task(remove_missing_bulbs())
     return bulbs
