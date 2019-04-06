@@ -40,8 +40,9 @@ class YeelightProtocol(SimpleServiceDiscoveryProtocol):
     excluded_headers = ['DATE', 'EXT', 'SERVER', 'CACHE-CONTROL', 'LOCATION']
     location_patter = r'yeelight://(?P<ip>\d{1,3}(\.\d{1,3}){3}):(?P<port>\d+)'
 
-    def __init__(self, bulb_class=Bulb, loop=None):
+    def __init__(self, bulb_class=Bulb, loop=None, **kwargs):
         self.bulb_class = bulb_class
+        self.bulb_kwargs = kwargs
         self.loop = loop or asyncio.get_event_loop()
 
     def connection_made(self, transport):
@@ -94,7 +95,7 @@ class YeelightProtocol(SimpleServiceDiscoveryProtocol):
     def register_bulb(self, **kwargs):
         idx = kwargs['id']
         if idx not in bulbs:
-            bulbs[idx] = self.bulb_class(**kwargs, _registry=bulbs)
+            bulbs[idx] = self.bulb_class(**kwargs, **self.bulb_kwargs, _registry=bulbs)
         else:
             bulbs[idx].last_seen = time.time()
 
@@ -110,10 +111,12 @@ class YeelightProtocol(SimpleServiceDiscoveryProtocol):
         asyncio.Task(_restart())
 
 
-async def search_bulbs(bulb_class=Bulb, loop=None):
+async def search_bulbs(bulb_class=Bulb, loop=None, kwargs=None):
     if loop is None:
         loop = asyncio.get_event_loop()
+    if kwargs is None:
+        kwargs = {}
     unicast_connection = loop.create_datagram_endpoint(
-        lambda: YeelightProtocol(bulb_class), family=socket.AF_INET)
+        lambda: YeelightProtocol(bulb_class, **kwargs), family=socket.AF_INET)
     ucast_transport, _ = await unicast_connection
     return bulbs
