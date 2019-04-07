@@ -114,11 +114,12 @@ class YeelightProtocol(SimpleServiceDiscoveryProtocol):
 async def remove_missing_bulbs(timeout=60):
     while True:
         missing_bulbs = (
-            bulb.id
-            for bulb in bulbs
+            idx
+            for idx, bulb in bulbs.items()
             if bulb.last_seen < time.time() - timeout
         )
         for idx in missing_bulbs:
+            logger.info('%r has not been seen in a while and will be removed', bulbs[idx])
             del bulbs[idx]
         await asyncio.sleep(timeout/2)
 
