@@ -1,4 +1,0 @@
--e .
-pytest
-coverage
-mocket
